@@ -1,11 +1,15 @@
 'use strict'
 /* global $ */
 
+const url = 'https://api.tfl.gov.uk/StopPoint'
+
 const canonburyStn = '910GCNNB' // Canonbury Overground
+const platformNr = 2 // Southbound to Crystal Palace/West Croydon
+
 const aberdeenBus = '490003053S' // Highbury Grove School / Aberdeen Park (CZ)
 
 window.onload = () => {
-  $.getJSON(`https://api.tfl.gov.uk/StopPoint/${canonburyStn}/arrivals`, (data) => {
+  $.getJSON(`${url}/${canonburyStn}/arrivals`, (data) => {
     let minExpected = 0
     let message = ''
 
@@ -15,14 +19,9 @@ window.onload = () => {
       var timeToStation = data[i].timeToStation
       console.log(platform, toMinutes(timeToStation))
 
-      if (
-        platform === 'Platform 2' &&
-        (
-          expected < minExpected ||
-          minExpected === 0
-        )
-      ) {
-        message = `${data[i].destinationName} in ${toMinutes(timeToStation)} min on ${platform}`
+      if (platform !== `Platform ${platformNr}`) { continue }
+      if (expected < minExpected || minExpected === 0) {
+        message = `Next Southbound in ${toMinutes(timeToStation)} min`
         minExpected = expected
       }
     }
